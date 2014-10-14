@@ -4,6 +4,9 @@ import org.apache.camel.builder.RouteBuilder;
 
 public class FilterRoute extends RouteBuilder {
 
+    public static final String CUSTOM_TRANSFORM = "customTransform";
+    public static final String ID_SWEDISH_LOG = "swedishLog";
+
     private String startUri;
     private String endUri;
 
@@ -17,13 +20,13 @@ public class FilterRoute extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        from(startUri).routeId("customTransform")
-            .filter().simple("${header[locale] eq 'se'}")
-                .log("Bork bork bork")
+        from(startUri).routeId(CUSTOM_TRANSFORM)
+            .filter().simple("${header[locale]} == 'se'")
+                .log("Bork bork bork").id(ID_SWEDISH_LOG)     // set id for log entry
             .end()
             .log("Received message: ${body}")
             .transform()
-                .simple("I got: ${body}")       // you have xpath and loads others
+                .simple("I got: ${body}")
             .to(endUri);
     }
 
