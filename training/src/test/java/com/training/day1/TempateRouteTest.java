@@ -28,13 +28,13 @@ public class TempateRouteTest extends CamelTestSupport {
         route1.setRouteId("transform1");
         route1.setStartUri(DIRECT_IN);
         route1.setEndUri("direct:transform2");
-        route1.setStartupOrder(20); // needs route2, startup last (we use 20 to allow more routes later)
+        route1.setStartupOrder(100);
 
         TemplateRoute route2 = new TemplateRoute();
         route2.setRouteId("transform2");
         route2.setStartUri("direct:transform2");
         route2.setEndUri(MOCK_OUT);
-        route2.setStartupOrder(10); // startup first (we use 10 to allow for adding more routes later)
+        route2.setStartupOrder(0);
 
         return new RouteBuilder[] { route1, route2 };
     }
@@ -44,7 +44,7 @@ public class TempateRouteTest extends CamelTestSupport {
 
         // add some expectations
         mockOut.setExpectedMessageCount(1);
-        mockOut.message(0).body().isEqualTo("I got: I got: Hello");
+        mockOut.message(0).body().isEqualTo("Transformed: Transformed: Hello");
 
         // send something
         template.sendBody("Hello");

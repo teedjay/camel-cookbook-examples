@@ -27,13 +27,22 @@ public class TemplateRoute extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
+
+        String subRouteId = "direct:sub" + routeId;
+
         from(startUri)
                 .routeId(routeId)
-                .startupOrder(startupOrder)
+                .startupOrder(startupOrder + 20)
             .log("Received message: ${body}")
-            .transform()
-                .simple("I got: ${body}")       // you have xpath and loads others
+            .to(subRouteId)
             .to(endUri);
+
+        from(subRouteId)
+                .routeId(routeId + ".sub")
+                .startupOrder(startupOrder + 10)
+            .transform()
+                .simple("Transformed: ${body}");
+
     }
 
 }
