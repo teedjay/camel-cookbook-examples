@@ -48,7 +48,7 @@ public class TempateRouteTest extends CamelTestSupport {
         mockOut.message(0).body().isEqualTo("Transformed: Transformed: Hello");
 
         // send something
-        template.sendBody("Hello");
+        template.asyncSendBody(DIRECT_IN, "Hello");
 
         // assert out expectations
         assertMockEndpointsSatisfied();
