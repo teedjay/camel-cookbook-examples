@@ -30,7 +30,7 @@ public class SimpleRouteTest {
         // set some expectations
         MockEndpoint mockOut = context.getEndpoint("mock:out", MockEndpoint.class);
         mockOut.setExpectedMessageCount(1);             // one message
-        mockOut.message(0).body().isEqualTo("Hello");   // expect some content
+        mockOut.message(0).body().isEqualTo("I got: Hello");   // expect some content
 
         // send a message
         ProducerTemplate template = context.createProducerTemplate();

@@ -7,8 +7,11 @@ public class SimpleRoute extends RouteBuilder {
     @Override
     public void configure() throws Exception {
         from("direct:in")
-                .log("Received message: ${body}")
-                .to("mock:out");
+            .routeId("customTransform")
+            .log("Received message: ${body}")
+            .transform()
+                .simple("I got: ${body}")       // you have xpath and loads others
+            .to("mock:out");
     }
 
 }
