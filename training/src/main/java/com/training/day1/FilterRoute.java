@@ -23,6 +23,7 @@ public class FilterRoute extends RouteBuilder {
         from(startUri).routeId(CUSTOM_TRANSFORM)
             .filter().simple("${header[locale]} == 'se'")
                 .log("Bork bork bork").id(ID_SWEDISH_LOG)     // set id for log entry
+                .to("file:swedishMessage")                    //
             .end()
             .log("Received message: ${body}")
             .transform()

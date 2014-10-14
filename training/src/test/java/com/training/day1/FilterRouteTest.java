@@ -42,6 +42,11 @@ public class FilterRouteTest extends CamelTestSupport {
     }
 
     @Override
+    public String isMockEndpointsAndSkip() {
+        return "file:*"; // skip all file: endpoints :D
+    }
+
+    @Override
     protected void debugBefore(Exchange exchange, Processor processor, ProcessorDefinition<?> definition, String id, String label) {
         super.debugBefore(exchange, processor, definition, id, label);
     }
@@ -76,9 +81,13 @@ public class FilterRouteTest extends CamelTestSupport {
         MockEndpoint mockSwedishLogs = getMockEndpoint(MOCK_SWEDISH_LOG);
         mockSwedishLogs.setExpectedMessageCount(1);
 
+        MockEndpoint mockFileEndpoint = getMockEndpoint("mock:file:swedishMessage");
+        mockFileEndpoint.setExpectedMessageCount(1);
+
         template.sendBodyAndHeader("Hello", "locale", "se");
 
         assertMockEndpointsSatisfied();
+
     }
 
 
