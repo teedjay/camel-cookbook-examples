@@ -14,8 +14,11 @@ public class SimpleRouteTest {
 
     @org.junit.Before
     public void setUp() throws Exception {
+        SimpleRoute simpleRoute = new SimpleRoute();
+        simpleRoute.setStartUri("direct:in");
+        simpleRoute.setEndUri("mock:out");
         context = new DefaultCamelContext();
-        context.addRoutes(new SimpleRoute());
+        context.addRoutes(simpleRoute);
         context.start();
     }
 
