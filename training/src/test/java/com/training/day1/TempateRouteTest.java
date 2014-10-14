@@ -15,6 +15,7 @@ public class TempateRouteTest extends CamelTestSupport {
 
     public static final String DIRECT_IN = "direct:in";
     public static final String MOCK_OUT = "mock:out";
+    public static final String SEDA_BRIDGE = "seda:transform2";
 
     @EndpointInject(uri = MOCK_OUT)
     MockEndpoint mockOut;
@@ -27,12 +28,12 @@ public class TempateRouteTest extends CamelTestSupport {
         TemplateRoute route1 = new TemplateRoute();
         route1.setRouteId("transform1");
         route1.setStartUri(DIRECT_IN);
-        route1.setEndUri("direct:transform2");
+        route1.setEndUri(SEDA_BRIDGE);
         route1.setStartupOrder(100);
 
         TemplateRoute route2 = new TemplateRoute();
         route2.setRouteId("transform2");
-        route2.setStartUri("direct:transform2");
+        route2.setStartUri(SEDA_BRIDGE);
         route2.setEndUri(MOCK_OUT);
         route2.setStartupOrder(0);
 
@@ -40,7 +41,7 @@ public class TempateRouteTest extends CamelTestSupport {
     }
 
     @Test
-    public void testTemplateRoute() throws Exception {
+    public void testTemplateRoute() throws InterruptedException {
 
         // add some expectations
         mockOut.setExpectedMessageCount(1);
