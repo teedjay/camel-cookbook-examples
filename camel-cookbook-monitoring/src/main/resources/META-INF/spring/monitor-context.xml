@@ -38,7 +38,7 @@
     </route>
 
     <route id="jmxMonitor">
-      <from uri="jmx:platform?objectDomain=org.apache.camel&amp;key.context=localhost/monitorCamelContext&amp;key.type=routes&amp;key.name=&quot;monitorRoute&quot;&amp;monitorType=counter&amp;observedAttribute=ExchangesCompleted&amp;initThreshold=0&amp;granularityPeriod=500&amp;offset=1&amp;differenceMode=false"/>
+      <from uri="jmx:platform?objectDomain=org.apache.camel&amp;key.context=localhost/monitorCamelContext&amp;key.type=routes&amp;key.name=&quot;monitorRoute&quot;&amp;monitorType=counter&amp;observedAttribute=ExchangesCompleted&amp;initThreshold=0&amp;granularityPeriod=500&amp;startupOrder=1&amp;differenceMode=false"/>
       <log message="${body}"/>
       <to uri="mock:monitor"/>
     </route>
