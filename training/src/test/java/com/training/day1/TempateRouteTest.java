@@ -43,12 +43,15 @@ public class TempateRouteTest extends CamelTestSupport {
     @Test
     public void testTemplateRoute() throws InterruptedException {
 
+        String expectedResponse = "Transformed: Transformed: Hello";
+
         // add some expectations
         mockOut.setExpectedMessageCount(1);
-        mockOut.message(0).body().isEqualTo("Transformed: Transformed: Hello");
+        mockOut.message(0).body().isEqualTo(expectedResponse);
 
-        // send something
-        template.asyncSendBody(DIRECT_IN, "Hello");
+        // send something to start direct, will run async using seda internally and wait for the response coming back
+        String response = template.requestBody(DIRECT_IN, "Hello", String.class);
+        assertEquals(expectedResponse, response);
 
         // assert out expectations
         assertMockEndpointsSatisfied();
