@@ -31,7 +31,7 @@ public class TempateRouteTest extends CamelTestSupport {
         route1.setStartupOrder(20); // needs route2, startup last (we use 20 to allow more routes later)
 
         TemplateRoute route2 = new TemplateRoute();
-        route1.setRouteId("transform2");
+        route2.setRouteId("transform2");
         route2.setStartUri("direct:transform2");
         route2.setEndUri(MOCK_OUT);
         route2.setStartupOrder(10); // startup first (we use 10 to allow for adding more routes later)
