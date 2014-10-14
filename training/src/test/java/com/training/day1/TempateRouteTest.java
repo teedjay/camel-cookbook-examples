@@ -1,10 +1,9 @@
 package com.training.day1;
 
-import org.apache.camel.EndpointInject;
-import org.apache.camel.Produce;
-import org.apache.camel.ProducerTemplate;
+import org.apache.camel.*;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.model.ProcessorDefinition;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Test;
 
@@ -40,6 +39,16 @@ public class TempateRouteTest extends CamelTestSupport {
         return new RouteBuilder[] { route1, route2 };
     }
 
+    @Override
+    public boolean isUseDebugger() {
+        return true;
+    }
+
+    @Override
+    protected void debugBefore(Exchange exchange, Processor processor, ProcessorDefinition<?> definition, String id, String label) {
+        super.debugBefore(exchange, processor, definition, id, label);
+    }
+
     @Test
     public void testTemplateRoute() throws InterruptedException {
 
@@ -53,7 +62,7 @@ public class TempateRouteTest extends CamelTestSupport {
         String response = template.requestBody(DIRECT_IN, "Hello", String.class);
         assertEquals(expectedResponse, response);
 
-        // assert out expectations
+        // assert out expectations (waiting for some amount of milliseconds before throwing exception)
         assertMockEndpointsSatisfied();
 
     }
