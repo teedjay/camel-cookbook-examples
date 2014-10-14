@@ -23,19 +23,28 @@ public class TempateRouteTest extends CamelTestSupport {
     ProducerTemplate template;
 
     @Override
-    protected RouteBuilder createRouteBuilder() throws Exception {
-        TemplateRoute route = new TemplateRoute();
-        route.setStartUri(DIRECT_IN);
-        route.setEndUri(MOCK_OUT);
-        return route;
+    protected RouteBuilder[] createRouteBuilders() throws Exception {
+        TemplateRoute route1 = new TemplateRoute();
+        route1.setRouteId("transform1");
+        route1.setStartUri(DIRECT_IN);
+        route1.setEndUri("direct:transform2");
+        route1.setStartupOrder(20); // needs route2, startup last (we use 20 to allow more routes later)
+
+        TemplateRoute route2 = new TemplateRoute();
+        route1.setRouteId("transform2");
+        route2.setStartUri("direct:transform2");
+        route2.setEndUri(MOCK_OUT);
+        route2.setStartupOrder(10); // startup first (we use 10 to allow for adding more routes later)
+
+        return new RouteBuilder[] { route1, route2 };
     }
 
     @Test
     public void testTemplateRoute() throws Exception {
 
         // add some expectations
-        mockOut.setExpectedMessageCount(1);                    // one message
-        mockOut.message(0).body().isEqualTo("I got: Hello");   // expect some content
+        mockOut.setExpectedMessageCount(1);
+        mockOut.message(0).body().isEqualTo("I got: I got: Hello");
 
         // send something
         template.sendBody("Hello");
