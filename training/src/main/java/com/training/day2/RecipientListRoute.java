@@ -19,7 +19,8 @@ public class RecipientListRoute extends RouteBuilder {
     public void configure() throws Exception {
 
         from(startUri).routeId("orderRouting")
-            .recipientList(method(OrderRouter.class));
+            .recipientList(method(OrderRouter.class))
+                .parallelProcessing();
 
     }
 
@@ -30,7 +31,7 @@ public class RecipientListRoute extends RouteBuilder {
                 @Header("customerType") String customerType) {
 
             if ("gold".equals(customerType)) {
-                return "mock:crm,mock:fastShipping";
+                return "mock:crm,mock:fastShipping"; // dynamic multicast and they all share the same transaction
             } else {
                 if (orderValue > 100) {
                     return "mock:fastShipping";
