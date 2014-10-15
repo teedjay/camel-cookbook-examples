@@ -21,17 +21,24 @@ public class GreeterRoute extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
+
         from(startUri).routeId("greeterRoute")
             .choice()
                 .when(simple("${header[locale]} == 'no'"))
                     .transform(simple("Hallo: ${body}"))
                 .when(simple("${header[locale]} == 'se'"))
                     .transform(simple("Bork bork bork: ${body}"))
+                .when(simple("${header[locale]} == 'ru'"))
+                    .to("direct:russian")
                 .otherwise()
                     .transform(simple("Hello: ${body}"))
             .end()
             .setHeader("additionalGreeting", body())
             .to(endUri);
+
+        from("direct:russian").routeId("russianLogging")
+            .log("I have no idea on how to speak russian").id("logRussian");
+
     }
 
 }
