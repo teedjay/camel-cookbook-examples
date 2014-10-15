@@ -27,8 +27,9 @@ public class GreeterTest extends CamelTestSupport {
             @Override
             public void configure() throws Exception {
                 from(DIRECT_IN)
-                    //.bean(new Greeter(), "greet(${body}, ${header[locale]})")
-                    .transform().method(new Greeter(), "greet(${body}, ${header[locale]})")
+                    .setHeader("additionalGreeting")
+                        .method(new Greeter(), "greet(${body}, ${header[locale]})")
+                    .bean(new Greeter(), "greet(${body}, ${header[locale]})")
                     .to(MOCK_OUT);
             }
         };
@@ -48,6 +49,7 @@ public class GreeterTest extends CamelTestSupport {
     public void testProcessor_noLocale() throws InterruptedException {
         mockOut.setExpectedMessageCount(1);
         mockOut.message(0).body().isEqualTo("Hello: Good people");
+        mockOut.message(0).header("additionalGreeting").isEqualTo("Hello: Good people");
         in.sendBody("Good people");
         assertMockEndpointsSatisfied();
     }
