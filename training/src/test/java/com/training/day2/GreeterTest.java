@@ -27,9 +27,8 @@ public class GreeterTest extends CamelTestSupport {
             @Override
             public void configure() throws Exception {
                 from(DIRECT_IN)
-                    .setHeader("additionalGreeting")
-                        .method(new Greeter(), "greet(${body}, ${header[locale]})")
-                    .bean(new Greeter(), "greet(${body}, ${header[locale]})")
+                    .setHeader("additionalGreeting", method(new Greeter(), "greet(${body}, ${header[locale]})"))
+                    .transform(method(new Greeter(), "greet(${body}, ${header[locale]})"))
                     .to(MOCK_OUT);
             }
         };
