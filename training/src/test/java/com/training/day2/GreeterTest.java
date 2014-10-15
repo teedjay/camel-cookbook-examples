@@ -10,7 +10,7 @@ import org.junit.Test;
 /**
  * Camel has built-in test support that does setup / tear down, creates mock endpoints etc
  */
-public class GreetingProcessorTest extends CamelTestSupport {
+public class GreeterTest extends CamelTestSupport {
 
     public static final String DIRECT_IN = "direct:in";
     public static final String MOCK_OUT = "mock:out";
@@ -28,7 +28,7 @@ public class GreetingProcessorTest extends CamelTestSupport {
             public void configure() throws Exception {
                 from(DIRECT_IN)
                     .log("Received message: ${body}")
-                    .process(new GreetingProcessor())
+                    .bean(new Greeter()) // it actually find and uses the correct method, setting "null" as the second parameter
                     .log("Transformed message: ${body}")
                     .to(MOCK_OUT);
             }

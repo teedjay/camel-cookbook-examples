@@ -5,8 +5,7 @@ import org.apache.camel.Message;
 import org.apache.camel.Processor;
 
 /**
- * Created with IntelliJ IDEA, 15.10.14 10:01
- *
+ * Simple processor example - relies on Camel Processor
  * @author thore
  */
 public class GreetingProcessor implements Processor {
