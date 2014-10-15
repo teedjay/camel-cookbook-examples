@@ -28,7 +28,7 @@ public class GreeterTest extends CamelTestSupport {
             public void configure() throws Exception {
                 from(DIRECT_IN)
                     .log("Received message: ${body}")
-                    .bean(new Greeter())
+                    .bean(new Greeter(), "greet(${body}, ${header[locale]})")
                     .log("Transformed message: ${body}")
                     .to(MOCK_OUT);
             }
