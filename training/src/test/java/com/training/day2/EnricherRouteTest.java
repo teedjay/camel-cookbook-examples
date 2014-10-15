@@ -37,19 +37,29 @@ public class EnricherRouteTest extends CamelTestSupport {
     @Test
     public void testEnricher() throws Exception {
 
-        mockOut.setExpectedMessageCount(1);
+        mockOut.setExpectedMessageCount(2);
         mockOut.message(0).body().isEqualTo("Ping:Pong");
+        mockOut.message(1).body().isEqualTo("Pong:Ping");
 
-        mockService.setExpectedMessageCount(1);
+        mockService.setExpectedMessageCount(2);
+
         mockService.whenExchangeReceived(1, new Processor() {
-                    @Override
-                    public void process(Exchange exchange) throws Exception {
-                        exchange.getIn().setBody("Pong");
-                    }
-                }
-            );
+            @Override
+            public void process(Exchange exchange) throws Exception {
+                exchange.getIn().setBody("Pong");
+            }
+        });
+
+        mockService.whenExchangeReceived(2, new Processor() {
+            @Override
+            public void process(Exchange exchange) throws Exception {
+                exchange.getIn().setBody("Ping");
+            }
+        });
 
         in.sendBody("Ping");
+        in.sendBody("Pong");
+
         assertMockEndpointsSatisfied();
     }
 
