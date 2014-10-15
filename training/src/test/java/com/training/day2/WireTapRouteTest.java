@@ -16,6 +16,7 @@ public class WireTapRouteTest extends CamelTestSupport {
     public static final String DIRECT_IN = "direct:in";
     public static final String MOCK_OUT = "mock:out";
     public static final String MOCK_AUDIT = "mock:audit";
+    public static final String DIRECT_SLOW_AUDIT_BACKEND = "direct:slowAuditBackend";
 
     @Produce(uri = DIRECT_IN)
     ProducerTemplate in;
@@ -37,12 +38,23 @@ public class WireTapRouteTest extends CamelTestSupport {
     }
 
     @Override
-    protected RouteBuilder createRouteBuilder() throws Exception {
+    protected RouteBuilder[] createRouteBuilders() throws Exception {
+
         WireTapRoute route = new WireTapRoute();
         route.setStartUri(DIRECT_IN);
         route.setEndUri(MOCK_OUT);
-        route.setAuditUri(MOCK_AUDIT);
-        return route;
+        route.setAuditUri(DIRECT_SLOW_AUDIT_BACKEND);
+
+        // adding a second "anonymous" route builder
+        return new RouteBuilder[] { route, new RouteBuilder() {
+            @Override
+            public void configure() throws Exception {
+                from(DIRECT_SLOW_AUDIT_BACKEND).routeId("backend")
+                    .delayer(1000)
+                    .to(MOCK_AUDIT);
+            }
+        }};
+
     }
 
     @Test
@@ -53,9 +65,19 @@ public class WireTapRouteTest extends CamelTestSupport {
         mockOut.message(0).body().isEqualTo("Hallo: Some Body");
 
         mockAudit.setExpectedMessageCount(1);
+        mockAudit.whenAnyExchangeReceived(new Processor() {
+            @Override
+            public void process(Exchange exchange) throws Exception {
+                Message in = exchange.getIn();
+                String body = in.getBody(String.class);
+                in.setBody("Audited: " + body);
+            }
+        });
 
         in.sendBodyAndHeader("Some Body", "locale", "no");
+
         assertMockEndpointsSatisfied();
+
     }
 
 }
