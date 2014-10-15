@@ -49,7 +49,7 @@ public class WireTapRouteTest extends CamelTestSupport {
         return new RouteBuilder[] { route, new RouteBuilder() {
             @Override
             public void configure() throws Exception {
-                from(DIRECT_SLOW_AUDIT_BACKEND).routeId("backend")
+                from(DIRECT_SLOW_AUDIT_BACKEND).routeId("backend").startupOrder(1)
                     .delayer(1000)
                     .to(MOCK_AUDIT);
             }
