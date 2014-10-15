@@ -45,28 +45,20 @@ public class WireTapRouteTest extends CamelTestSupport {
         WireTapRoute route = new WireTapRoute();
         route.setStartUri(DIRECT_IN);
         route.setEndUri(MOCK_OUT);
-        route.setAuditUri(DIRECT_SLOW_AUDIT_BACKEND);
+        route.setAuditUri(MOCK_AUDIT);
 
-        // adding a second "anonymous" route builder
-        return new RouteBuilder[] { route, new RouteBuilder() {
-            @Override
-            public void configure() throws Exception {
-                from(DIRECT_SLOW_AUDIT_BACKEND).routeId("backend").startupOrder(1)
-                    .delayer(1000)
-                    .to(MOCK_AUDIT);
-            }
-        }};
+        return new RouteBuilder[] { route };
 
     }
 
     @Test
     public void testProcessor_no() throws Exception {
 
-        context.start();
         mockOut.setExpectedMessageCount(1);
         mockOut.message(0).body().isEqualTo("Hallo: Some Body");
 
-        mockAudit.setExpectedMessageCount(1);
+        mockAudit.setExpectedMessageCount(4);           // 1 + 3 redelivery attempts
+        mockAudit.setMinimumExpectedMessageCount(4);    // 1 + 3 redelivery attempts
         mockAudit.whenAnyExchangeReceived(new Processor() {
             @Override
             public void process(Exchange exchange) throws Exception {
@@ -76,7 +68,7 @@ public class WireTapRouteTest extends CamelTestSupport {
 
         in.sendBodyAndHeader("Some Body", "locale", "no");
 
-        assertMockEndpointsSatisfied();
+        assertMockEndpointsSatisfied(); // asserts all injected mocks
 
     }
 
