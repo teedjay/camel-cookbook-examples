@@ -8,7 +8,8 @@ import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Test;
 
 /**
- * Camel has built-in test support that does setup / tear down, creates mock endpoints etc
+ * Headers are for metadata - could be routing info (like destination queue names, flags
+ * locale settings, username of the callee, decisions made during processing and so on)
  */
 public class GreeterTest extends CamelTestSupport {
 
@@ -27,6 +28,7 @@ public class GreeterTest extends CamelTestSupport {
             @Override
             public void configure() throws Exception {
                 from(DIRECT_IN)
+                    //.setHeader("locale", xpath("/request@locale")) // just a small xpath example
                     .setHeader("additionalGreeting", method(new Greeter(), "greet(${body}, ${header[locale]})"))
                     .transform(method(new Greeter(), "greet(${body}, ${header[locale]})"))
                     .to(MOCK_OUT);
