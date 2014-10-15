@@ -8,6 +8,8 @@ import org.apache.camel.model.ProcessorDefinition;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Test;
 
+import java.net.ConnectException;
+
 /**
  * Camel has built-in test support that does setup / tear down, creates mock endpoints etc
  */
@@ -68,9 +70,7 @@ public class WireTapRouteTest extends CamelTestSupport {
         mockAudit.whenAnyExchangeReceived(new Processor() {
             @Override
             public void process(Exchange exchange) throws Exception {
-                Message in = exchange.getIn();
-                String body = in.getBody(String.class);
-                in.setBody("Audited: " + body);
+                throw new ConnectException("Network failure");
             }
         });
 
