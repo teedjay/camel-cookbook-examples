@@ -28,7 +28,7 @@ public class GreeterTest extends CamelTestSupport {
             public void configure() throws Exception {
                 from(DIRECT_IN)
                     .log("Received message: ${body}")
-                    .bean(new Greeter()) // it actually find and uses the correct method, setting "null" as the second parameter
+                    .bean(new Greeter())
                     .log("Transformed message: ${body}")
                     .to(MOCK_OUT);
             }
