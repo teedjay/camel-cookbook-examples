@@ -1,7 +1,6 @@
 package com.training.day2;
 
 import org.apache.camel.*;
-import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.model.ProcessorDefinition;
@@ -13,7 +12,7 @@ import java.net.ConnectException;
 /**
  * Camel has built-in test support that does setup / tear down, creates mock endpoints etc
  */
-public class WireTapRouteTest extends CamelTestSupport {
+public class WireTapRouteTest2 extends CamelTestSupport {
 
     public static final String DIRECT_IN = "direct:in";
     public static final String MOCK_OUT = "mock:out";
@@ -42,7 +41,7 @@ public class WireTapRouteTest extends CamelTestSupport {
     @Override
     protected RouteBuilder[] createRouteBuilders() throws Exception {
 
-        WireTapRoute route = new WireTapRoute();
+        WireTapRoute2 route = new WireTapRoute2();
         route.setStartUri(DIRECT_IN);
         route.setEndUri(MOCK_OUT);
         route.setAuditUri(MOCK_AUDIT);
