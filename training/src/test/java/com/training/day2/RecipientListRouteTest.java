@@ -40,18 +40,38 @@ public class RecipientListRouteTest extends CamelTestSupport {
 
     @Test
     public void testGoldCustomer() throws Exception {
-
         mockShipping.setExpectedMessageCount(0);
         mockFastShipping.setExpectedMessageCount(1);
         mockCrm.setExpectedMessageCount(1);
-
         Map<String, Object> headers = new HashMap<String, Object>();
         headers.put("value", 39.99);
         headers.put("customerType", "gold");
         in.sendBodyAndHeaders("Camel Coockbook", headers);
-
         assertMockEndpointsSatisfied();
+    }
 
+    @Test
+    public void testSilverCustomer() throws Exception {
+        mockShipping.setExpectedMessageCount(1);
+        mockFastShipping.setExpectedMessageCount(0);
+        mockCrm.setExpectedMessageCount(0);
+        Map<String, Object> headers = new HashMap<String, Object>();
+        headers.put("value", 39.99);
+        headers.put("customerType", "silver");
+        in.sendBodyAndHeaders("Camel Coockbook", headers);
+        assertMockEndpointsSatisfied();
+    }
+
+    @Test
+    public void testLimitedEditionBook() throws Exception {
+        mockShipping.setExpectedMessageCount(0);
+        mockFastShipping.setExpectedMessageCount(1);
+        mockCrm.setExpectedMessageCount(0);
+        Map<String, Object> headers = new HashMap<String, Object>();
+        headers.put("value", 139.99);
+        headers.put("customerType", "silver");
+        in.sendBodyAndHeaders("Signed Camel Coockbook", headers);
+        assertMockEndpointsSatisfied();
     }
 
 }
