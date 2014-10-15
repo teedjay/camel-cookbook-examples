@@ -9,7 +9,7 @@ import java.net.ConnectException;
  * Adding wire tapping - for auditing in the background and other uses.
  * @author thore
  */
-public class WireTapRoute2 extends RouteBuilder {
+public class WireTapRoute extends RouteBuilder {
 
     private String startUri;
     private String endUri;

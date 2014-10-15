@@ -12,7 +12,7 @@ import java.net.ConnectException;
 /**
  * Camel has built-in test support that does setup / tear down, creates mock endpoints etc
  */
-public class WireTapRouteTest2 extends CamelTestSupport {
+public class WireTapRouteTest extends CamelTestSupport {
 
     public static final String DIRECT_IN = "direct:in";
     public static final String MOCK_OUT = "mock:out";
@@ -41,7 +41,7 @@ public class WireTapRouteTest2 extends CamelTestSupport {
     @Override
     protected RouteBuilder[] createRouteBuilders() throws Exception {
 
-        WireTapRoute2 route = new WireTapRoute2();
+        WireTapRoute route = new WireTapRoute();
         route.setStartUri(DIRECT_IN);
         route.setEndUri(MOCK_OUT);
         route.setAuditUri(MOCK_AUDIT);
