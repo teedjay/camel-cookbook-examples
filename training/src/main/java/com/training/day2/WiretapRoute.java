@@ -1,6 +1,9 @@
 package com.training.day2;
 
+import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
+
+import java.net.ConnectException;
 
 /**
  * Adding wire tapping - for auditing in the background and other uses.
@@ -26,6 +29,24 @@ public class WireTapRoute extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
+
+        // add any post processing here
+        //onCompletion()
+            //.onCompleteOnly()
+            //    .log("Message completed successfully");
+            //.onFailureOnly()
+            //    .log("Message failed");
+
+        // introducing a global exception handler
+        onException(ConnectException.class)
+                .onWhen(simple("${exception.message} contains 'Network'"))
+                .maximumRedeliveries(3)
+                .redeliveryDelay(1000)
+            .log("Problem connection to backend: ${exception.message}")
+            .log("Attempted ${header[" + Exchange.REDELIVERY_COUNTER + "]} redeliveries")
+            //.handled(true)      // finish processing
+            //.continued(true)    // go to next processing step
+        .end();
 
         from(startUri).routeId("greeterRoute").startupOrder(30)
             .choice()
