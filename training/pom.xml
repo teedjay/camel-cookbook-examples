@@ -58,6 +58,53 @@
       <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <!-- these were added just for the last transactional JMS AQ test -->
+      <dependency>
+          <groupId>commons-lang</groupId>
+          <artifactId>commons-lang</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.camel</groupId>
+          <artifactId>camel-sql</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.camel</groupId>
+          <artifactId>camel-jdbc</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-jdbc</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>com.h2database</groupId>
+          <artifactId>h2</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>com.atomikos</groupId>
+          <artifactId>transactions</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>com.atomikos</groupId>
+          <artifactId>transactions-jdbc</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>com.atomikos</groupId>
+          <artifactId>transactions-jms</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.activemq</groupId>
+          <artifactId>activemq-camel</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-jms</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.geronimo.specs</groupId>
+          <artifactId>geronimo-jta_1.1_spec</artifactId>
+      </dependency>
+
   </dependencies>
 
 </project>
