@@ -18,6 +18,7 @@ public class TransactedRouteTest extends CamelTestSupport {
 
     public static final String DIRECT_IN = "direct:in";
     public static final String MOCK_OUT = "mock:out";
+    public static final String MOCK_SERVICE = "mock:service";
 
     @Rule // rule is cool : "at the start call the before() inside the class, at the end run after()"
     public EmbeddedActiveMQBroker broker = new EmbeddedActiveMQBroker("myEmbeddedBroker");
@@ -50,17 +51,41 @@ public class TransactedRouteTest extends CamelTestSupport {
     @Override
     protected RouteBuilder[] createRouteBuilders() throws Exception {
         TransactedRoute route = new TransactedRoute();
-        route.setStartUri(DIRECT_IN);
-        route.setEndUri(MOCK_OUT);
-        return new RouteBuilder[] { route };
+
+        route.setStartUri("jms:in");
+        route.setEndUri("jms:out");
+        route.setServiceUri(MOCK_SERVICE);
+
+        RouteBuilder harness = new RouteBuilder() {
+            @Override
+            public void configure() throws Exception {
+
+                from(DIRECT_IN)
+                    .log("Sending ${body}")
+                    .to("jms:in")
+                ;
+
+                from("jms:out")
+                    .log("Received ${body}")
+                    .to(MOCK_OUT)
+                ;
+
+            }
+        };
+
+        return new RouteBuilder[] { route, harness };
     }
 
     @Test
-    public void testRoute() throws Exception {
+    public void testTransaction() throws Exception {
+
         mockOut.setExpectedMessageCount(1);
         mockOut.message(0).body().isEqualTo("Some Body");
+
         in.sendBody("Some Body");
-        assertMockEndpointsSatisfied(); // asserts all injected mocks
+
+        assertMockEndpointsSatisfied();
+
     }
 
 }
