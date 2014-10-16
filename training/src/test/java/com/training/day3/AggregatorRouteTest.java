@@ -42,8 +42,6 @@ public class AggregatorRouteTest extends CamelTestSupport {
     @Test
     public void testCMP() throws Exception {
 
-        String[] goodThing = { "cake", "puppies", "sleeping babies"};
-
         mockOut.setExpectedMessageCount(1);
         mockOut.message(0).body().isEqualTo("CAKE:PUPPIES:SLEEPING BABIES");
 

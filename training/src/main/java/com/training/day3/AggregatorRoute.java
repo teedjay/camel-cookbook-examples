@@ -25,7 +25,9 @@ public class AggregatorRoute extends RouteBuilder {
         from(startUri).routeId("aggregatorRoute")
             .log("Processing ${exchangeId} : ${body}")
             .transform(simple("${body.toUpperCase()}"))
-            .aggregate(constant(true), new ConcatinatingStrategy()).completionSize(3)
+            .aggregate(constant(true), new ConcatinatingStrategy())
+                .completionSize(10)         // by intent => will never be reached, we only have 3 messages
+                .completionInterval(500)    // timeout and send aggregate after 0.5 seconds
             .log("At the end : ${body}")
             .to(endUri)
         ;
