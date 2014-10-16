@@ -23,10 +23,11 @@ public class SplitRoute extends RouteBuilder {
     public void configure() throws Exception {
 
         from(startUri).routeId("splitterRoute")
-            .split(body())
+            .split(body()).parallelProcessing()
                 .log("Processing ${exchangeId} : ${body}")
                 .to(endUri)
             .end()
+            .log("At the end : ${body}")
         ;
 
     }
