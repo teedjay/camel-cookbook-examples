@@ -25,7 +25,11 @@ public class IdempotentRoute extends RouteBuilder {
 
         from(startUri).routeId("idempotentRoute")
             .idempotentConsumer(body(), new MemoryIdempotentRepository())
-            .to(endUri);
+                .log("Consuming ${body}")
+                .to(endUri)
+            .end()
+            .log("Processed ${body}")
+        ;
 
     }
 
