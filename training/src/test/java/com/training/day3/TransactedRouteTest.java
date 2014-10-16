@@ -107,7 +107,7 @@ public class TransactedRouteTest extends CamelTestSupport {
         mockService.setExpectedMessageCount(2);
         mockService.whenExchangeReceived(2, new ExceptionThrowingProcessor());
 
-        mockOut.setExpectedMessageCount(1);
+        mockOut.setExpectedMessageCount(1); // the second message will be rolled back onto queue
         mockOut.message(0).body().isEqualTo("Good Body");
 
         in.sendBody("Good Body");
