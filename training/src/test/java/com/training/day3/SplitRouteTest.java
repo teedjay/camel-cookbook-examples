@@ -40,10 +40,16 @@ public class SplitRouteTest extends CamelTestSupport {
     }
 
     @Test
-    public void testRoute() throws Exception {
-        mockOut.setExpectedMessageCount(1);
-        mockOut.message(0).body().isEqualTo("Some Body");
-        in.sendBody("Some Body");
+    public void testSplitting() throws Exception {
+
+        mockOut.setExpectedMessageCount(3);
+        mockOut.message(0).body().isEqualTo("cake");
+        mockOut.message(1).body().isEqualTo("puppies");
+        mockOut.message(2).body().isEqualTo("sleeping babies");
+
+        String[] goodThing = { "cake", "puppies", "sleeping babies"};
+        in.sendBody(goodThing);
+
         assertMockEndpointsSatisfied();
     }
 
