@@ -13,6 +13,7 @@ import org.junit.Test;
 public class IdempotentRouteTest extends CamelTestSupport {
 
     public static final String DIRECT_IN = "direct:in";
+    public static final String MOCK_QUERY = "mock:query";
     public static final String MOCK_OUT = "mock:out";
 
     @Produce(uri = DIRECT_IN)
@@ -20,6 +21,9 @@ public class IdempotentRouteTest extends CamelTestSupport {
 
     @EndpointInject(uri = MOCK_OUT)
     MockEndpoint mockOut;
+
+    @EndpointInject(uri = MOCK_QUERY)
+    MockEndpoint mockQuery;
 
     @Override
     public boolean isUseDebugger() {
@@ -35,6 +39,7 @@ public class IdempotentRouteTest extends CamelTestSupport {
     protected RouteBuilder[] createRouteBuilders() throws Exception {
         IdempotentRoute route = new IdempotentRoute();
         route.setStartUri(DIRECT_IN);
+        route.setQueryUri(MOCK_QUERY);
         route.setEndUri(MOCK_OUT);
         return new RouteBuilder[] { route };
     }
@@ -44,6 +49,9 @@ public class IdempotentRouteTest extends CamelTestSupport {
 
         mockOut.setExpectedMessageCount(3);
         mockOut.expectedBodiesReceived("cheese", "chocolate", "wine");
+
+        mockQuery.setExpectedMessageCount(1);
+        mockQuery.expectedBodiesReceived("cheese");
 
         in.sendBody("cheese");
         in.sendBody("chocolate");
