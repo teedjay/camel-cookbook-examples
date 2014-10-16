@@ -1,15 +1,20 @@
 package com.training.day3;
 
 import com.training.utils.EmbeddedActiveMQBroker;
+import com.training.utils.ExceptionThrowingProcessor;
+import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.camel.component.ActiveMQComponent;
 import org.apache.camel.*;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.impl.DefaultCamelContext;
+import org.apache.camel.impl.SimpleRegistry;
 import org.apache.camel.model.ProcessorDefinition;
+import org.apache.camel.spring.spi.SpringTransactionPolicy;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Rule;
 import org.junit.Test;
+import org.springframework.jms.connection.JmsTransactionManager;
 
 /**
  * Camel has built-in test support that does setup / tear down, creates mock endpoints etc
@@ -29,6 +34,9 @@ public class TransactedRouteTest extends CamelTestSupport {
     @EndpointInject(uri = MOCK_OUT)
     MockEndpoint mockOut;
 
+    @EndpointInject(uri = MOCK_SERVICE)
+    MockEndpoint mockService;
+
     @Override
     public boolean isUseDebugger() {
         return true;
@@ -41,11 +49,28 @@ public class TransactedRouteTest extends CamelTestSupport {
 
     @Override
     protected CamelContext createCamelContext() throws Exception {
+
+        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(broker.getTcpConnectorUri());
+        JmsTransactionManager transactionManager = new JmsTransactionManager();
+        transactionManager.setConnectionFactory(connectionFactory);
+
         ActiveMQComponent jms = new ActiveMQComponent();
-        jms.setBrokerURL(broker.getTcpConnectorUri());
-        DefaultCamelContext context = new DefaultCamelContext();
+        jms.setConnectionFactory(connectionFactory);
+        jms.setTransactionManager(transactionManager);
+
+        SpringTransactionPolicy policy = new SpringTransactionPolicy();
+        policy.setTransactionManager(transactionManager);
+        policy.setPropagationBehaviorName("PROPAGATION_REQUIRED");
+
+        SimpleRegistry registry = new SimpleRegistry();
+        registry.put("transactionManager", transactionManager);
+        registry.put("jms.required", policy);
+
+        DefaultCamelContext context = new DefaultCamelContext(registry);
         context.addComponent("jms", jms);
+
         return context;
+
     }
 
     @Override
@@ -79,10 +104,14 @@ public class TransactedRouteTest extends CamelTestSupport {
     @Test
     public void testTransaction() throws Exception {
 
-        mockOut.setExpectedMessageCount(1);
-        mockOut.message(0).body().isEqualTo("Some Body");
+        mockService.setExpectedMessageCount(2);
+        mockService.whenExchangeReceived(2, new ExceptionThrowingProcessor());
 
-        in.sendBody("Some Body");
+        mockOut.setExpectedMessageCount(1);
+        mockOut.message(0).body().isEqualTo("Good Body");
+
+        in.sendBody("Good Body");
+        in.sendBody("Bad Body");
 
         assertMockEndpointsSatisfied();
 

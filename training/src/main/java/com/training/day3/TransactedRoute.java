@@ -27,8 +27,11 @@ public class TransactedRoute extends RouteBuilder {
     @Override
     public void configure() throws Exception {
 
-        from(startUri).routeId("splitterRoute")
-            .to(endUri);
+        from(startUri).routeId("transactedRoute")
+            .transacted()
+            .to(endUri)
+            .to(serviceUri)
+        ;
 
     }
 
