@@ -1,6 +1,8 @@
 package com.training.day3;
 
+import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.processor.aggregate.AggregationStrategy;
 
 /**
  * Route for testing splitting.
@@ -23,8 +25,8 @@ public class CmpRoute extends RouteBuilder {
     public void configure() throws Exception {
 
         from(startUri).routeId("splitterRoute")
-            .split(body())
-                .bean(UpperCaseBean.class)
+            .split(body()).aggregationStrategy(getAggregationStrategy())
+                .transform(simple("${body.toUpperCase()}"))
                 .log("Processing ${exchangeId} : ${body}")
             .end()
             .log("At the end : ${body}")
@@ -33,8 +35,13 @@ public class CmpRoute extends RouteBuilder {
 
     }
 
-    public static class UpperCaseBean {
-        public String upperCase(String in) { return in.toUpperCase(); }
+    private AggregationStrategy getAggregationStrategy() {
+        return new AggregationStrategy() {
+            @Override
+            public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
+                return oldExchange;
+            }
+        };
     }
 
 }
