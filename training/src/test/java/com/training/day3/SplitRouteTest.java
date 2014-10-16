@@ -33,10 +33,23 @@ public class SplitRouteTest extends CamelTestSupport {
 
     @Override
     protected RouteBuilder[] createRouteBuilders() throws Exception {
+
         SplitRoute route = new SplitRoute();
         route.setStartUri(DIRECT_IN);
-        route.setEndUri(MOCK_OUT);
-        return new RouteBuilder[] { route };
+        route.setEndUri("direct:harness"); // Harness, as in : http://en.wikipedia.org/wiki/Test_harness
+
+        RouteBuilder harnessRoute = new RouteBuilder() {
+            @Override
+            public void configure() throws Exception {
+                from("direct:harness")
+                    .resequence(body())     // uses Comparable-interface to decide order, so this will be alphabetical
+                    .log("Resequencing : ${body}")
+                    .to(MOCK_OUT);
+            }
+        };
+
+        return new RouteBuilder[] { route, harnessRoute };
+
     }
 
     @Test
@@ -45,7 +58,7 @@ public class SplitRouteTest extends CamelTestSupport {
         String[] goodThing = { "cake", "puppies", "sleeping babies"};
 
         mockOut.setExpectedMessageCount(3);
-        mockOut.expectedBodiesReceivedInAnyOrder(goodThing); // very useful for parallel processing
+        mockOut.expectedBodiesReceived(goodThing); // in the exact same order
 
         in.sendBody(goodThing);
 
